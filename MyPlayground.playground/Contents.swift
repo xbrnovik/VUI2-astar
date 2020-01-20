@@ -23,10 +23,9 @@ class Node: Equatable {
     }
 }
 
-class Algo {
-    var returnedPath: [Position] = []
+class Algorithms {
     
-    func astar(maze: [[Int]], start: Position, end: Position) {
+    func astar(maze: [[Int]], start: Position, end: Position) -> [Position]? {
         let startNode = Node(position: start)
         startNode.g = 0
         startNode.h = 0
@@ -38,11 +37,12 @@ class Algo {
         var openList: [Node] = []
         var closedList: [Node] = []
         openList.append(startNode)
+        var astarPath: [Position]? = nil
         
         while openList.count > 0 {
             
             guard let first = openList.first else {
-                return
+                return nil
             }
             var currentNode = first
             var currentIndex = 0
@@ -63,23 +63,27 @@ class Algo {
                     path.append(current!.position)
                     current = current?.parent
                 }
-                self.returnedPath = path.reversed()
-                return
+                astarPath = path.reversed()
+                break
             }
 
             var children: [Node] = []
-            let adjacentSquares = [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]
+            let adjacentSquares = [
+                Position(x: 0, y: -1),
+                Position(x: 0, y: 1),
+                Position(x: -1, y: 0),
+                Position(x: 1, y: 0),
+                Position(x: -1, y: -1),
+                Position(x: -1, y: 1),
+                Position(x: 1, y: -1),
+                Position(x:1, y:1)
+            ]
             
             for newPosition in adjacentSquares {
-                let nodePositionX = currentNode.position.x + newPosition.0
-                let nodePositionY = currentNode.position.y + newPosition.1
-                let nodePosition = Position(x: nodePositionX, y: nodePositionY)
+                let nodePosition = Position(x: currentNode.position.x + newPosition.x,
+                                            y: currentNode.position.y + newPosition.y)
                 
-                if (
-                nodePosition.x > (maze.count-1) ||
-                nodePosition.x < 0 ||
-                nodePosition.y > (maze[maze.count-1].count-1) ||
-                nodePosition.y < 0) {
+                if ( nodePosition.x > (maze.count-1) || nodePosition.x < 0 || nodePosition.y > (maze[maze.count-1].count-1) || nodePosition.y < 0) {
                     continue
                 }
                 
@@ -90,7 +94,7 @@ class Algo {
                 let newNode = Node(parent: currentNode, position: nodePosition)
                 children.append(newNode)
             }
-            print(children.count)
+            
             for child in children {
                 for closedChild in closedList {
                     if child == closedChild {
@@ -108,13 +112,11 @@ class Algo {
                         continue
                     }
                 }
-                
-                print(child.position)
-               openList.append(child)
+                openList.append(child)
             }
             
         }
-        
+        return astarPath
         
     }
 }
@@ -134,6 +136,5 @@ let maze = [[0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
 let start = Position(x: 0, y: 0)
 let end = Position(x: 7, y: 6)
 
-let algo = Algo()
-algo.astar(maze: maze, start: start, end: end)
-print(algo.returnedPath)
+let starPath = Algorithms().astar(maze: maze, start: start, end: end)
+print(starPath)
