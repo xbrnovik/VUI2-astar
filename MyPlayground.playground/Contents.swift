@@ -7,10 +7,6 @@ struct Position {
 }
 
 class Node: Equatable {
-    static func == (lhs: Node, rhs: Node) -> Bool {
-        (lhs.position.x == rhs.position.x) && (lhs.position.y == rhs.position.y)
-    }
-    
     var g: Int = 0
     var h: Int = 0
     var f: Int = 0
@@ -21,19 +17,17 @@ class Node: Equatable {
         self.parent = parent
         self.position = position
     }
+    
+    static func == (lhs: Node, rhs: Node) -> Bool {
+        (lhs.position.x == rhs.position.x) && (lhs.position.y == rhs.position.y)
+    }
 }
 
 class Algorithms {
     
     func astar(maze: [[Int]], start: Position, end: Position) -> [Position]? {
         let startNode = Node(position: start)
-        startNode.g = 0
-        startNode.h = 0
-        startNode.f = 0
         let endNode = Node(position: end)
-        endNode.g = 0
-        endNode.h = 0
-        endNode.f = 0
         var openList: [Node] = []
         var closedList: [Node] = []
         openList.append(startNode)
@@ -41,16 +35,11 @@ class Algorithms {
         
         while openList.count > 0 {
             
-            guard let first = openList.first else {
+            guard
+                let currentNode = openList.min(by: { $0.f < $1.f }),
+                let currentIndex = openList.firstIndex(of: currentNode)
+            else {
                 return nil
-            }
-            var currentNode = first
-            var currentIndex = 0
-            for (index, item) in openList.enumerated() {
-                if item.f < currentNode.f {
-                    currentNode = item
-                    currentIndex = index-1
-                }
             }
             
             openList.remove(at: currentIndex)
@@ -59,7 +48,7 @@ class Algorithms {
             if currentNode == endNode {
                 var path: [Position] = []
                 var current: Node? = currentNode
-                while (current != nil) {
+                while current != nil {
                     path.append(current!.position)
                     current = current?.parent
                 }
