@@ -3,7 +3,7 @@
 Implementation of A* algorithm using simple arrays.
 
   - Swift playground
-  - Inspired by [medium][medium-astar]
+  - Source/Inspired by [medium][medium-astar]
   - Python [online][python-online]
   - Public very nice swift implementation of A*: [Yet Another A Star][yet-another-astar-github]
 
